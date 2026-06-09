@@ -2,12 +2,19 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Mail, Lock, Loader2 } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { login, token } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (token) {
+      navigate('/dashboard/halls', { replace: true });
+    }
+  }, [token, navigate]);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -16,11 +23,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const success = await login(credentials);
+    await login(credentials);
     setIsSubmitting(false);
-    if (success) {
-      navigate('/dashboard/halls');
-    }
   };
 
   return (

@@ -9,7 +9,7 @@ const Register = () => {
     last_name: '',
     email: '',
     password: '',
-    mobile_number: '',
+    mobile: '',
     designation: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,7 +26,7 @@ const Register = () => {
     const success = await register(formData);
     setIsSubmitting(false);
     if (success) {
-      navigate('/dashboard/halls');
+      navigate('/login');
     }
   };
 
@@ -115,8 +115,8 @@ const Register = () => {
                 </div>
                 <input
                   type="tel"
-                  name="mobile_number"
-                  value={formData.mobile_number}
+                  name="mobile"
+                  value={formData.mobile}
                   onChange={handleChange}
                   required
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
