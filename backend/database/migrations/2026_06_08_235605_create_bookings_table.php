@@ -15,10 +15,8 @@ Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('hall_id')->constrained();
-            $table->date('date');
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->string('status')->default('pending');
+            $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+            $table->date('booking_date');
             $table->timestamps();
         });
     }

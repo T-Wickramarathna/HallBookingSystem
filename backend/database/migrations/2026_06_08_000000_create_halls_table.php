@@ -17,7 +17,9 @@ Schema::create('halls', function (Blueprint $table) {
         $table->string('location');
         $table->integer('capacity');
         $table->decimal('price', 8, 2);
+        $table->text('description')->nullable();
         $table->string('status')->default('available');
+        $table->string('image_path')->nullable();
         $table->timestamps();
     });
     }
