@@ -14,13 +14,16 @@ export const AuthProvider = ({ children }) => {
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
 
-    if (storedToken && storedUser) {
+    if (storedToken && storedToken !== 'undefined' && storedUser && storedUser !== 'undefined') {
       setToken(storedToken);
       try {
         setUser(JSON.parse(storedUser));
       } catch (e) {
         console.error("Failed to parse user data from localStorage");
       }
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
     setLoading(false);
   }, []);
@@ -29,8 +32,10 @@ export const AuthProvider = ({ children }) => {
     try {
       // Assuming your API endpoint is /login
       const response = await api.post('/login', credentials);
-      const { token: newToken, user: userData } = response.data;
+      const { access_token: newToken, user: userData } = response.data;
       
+      if (!newToken) throw new Error("No access token received");
+
       setToken(newToken);
       setUser(userData);
       
@@ -58,7 +63,7 @@ export const AuthProvider = ({ children }) => {
         position: 'top-right',
         toast: true,
         icon: 'error',
-        title: error.response?.data?.message || 'Login failed. Please try again.',
+        title: error.response?.data?.message || error.message || 'Login failed. Please try again.',
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
@@ -75,20 +80,13 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await api.post('/register', userData);
-      const { token: newToken, user: newUserData } = response.data;
+      await api.post('/register', userData);
       
-      setToken(newToken);
-      setUser(newUserData);
-      
-      localStorage.setItem('token', newToken);
-      localStorage.setItem('user', JSON.stringify(newUserData));
-
       Swal.fire({
         position: 'top-right',
         toast: true,
         icon: 'success',
-        title: 'Registration successful!',
+        title: 'Registration successful! Please login.',
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
@@ -100,6 +98,7 @@ export const AuthProvider = ({ children }) => {
         }
       });
       return true;
+
     } catch (error) {
       Swal.fire({
         position: 'top-right',
