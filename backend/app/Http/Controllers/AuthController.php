@@ -16,7 +16,7 @@ class AuthController extends Controller
             'last_name' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'mobile' => 'required',
+            'mobile' => ['required', 'string', 'regex:/^0[7][0-9]{8}$/'],
             'designation' => 'required'
         ]);
 
