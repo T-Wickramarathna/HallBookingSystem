@@ -2,13 +2,13 @@ import React from 'react';
 import { MapPin, Users } from 'lucide-react';
 
 const HallCard = ({ hall, onBookNow }) => {
-  const isAvailable = hall.status === 'Available';
+  const isAvailable = hall.status.toLowerCase() === 'available';
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-blue-50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 transform hover:-translate-y-1">
       <div className="relative h-48 bg-gray-200">
-        {hall.image ? (
-          <img src={hall.image} alt={hall.name} className="w-full h-full object-cover" />
+        {hall.image_url ? (
+          <img src={hall.image_url} alt={hall.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-400">
             <span className="font-medium text-lg">No Image</span>

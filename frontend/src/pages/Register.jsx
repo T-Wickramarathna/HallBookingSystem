@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { User, Mail, Lock, Phone, Briefcase, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Phone, Loader2, Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,9 +9,9 @@ const Register = () => {
     last_name: '',
     email: '',
     password: '',
-    mobile: '',
-    designation: ''
+    mobile: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const Register = () => {
             <p className="text-gray-500">Fill in the details below to get started.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -65,6 +65,7 @@ const Register = () => {
                     value={formData.first_name}
                     onChange={handleChange}
                     required
+                    autoComplete="off"
                     className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                     placeholder="John"
                   />
@@ -82,6 +83,7 @@ const Register = () => {
                     value={formData.last_name}
                     onChange={handleChange}
                     required
+                    autoComplete="off"
                     className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                     placeholder="Doe"
                   />
@@ -101,6 +103,7 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  autoComplete="off"
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                   placeholder="john@example.com"
                 />
@@ -119,31 +122,10 @@ const Register = () => {
                   value={formData.mobile}
                   onChange={handleChange}
                   required
+                  autoComplete="off"
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                   placeholder="+1 (555) 000-0000"
                 />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Briefcase className="h-5 w-5 text-gray-400" />
-                </div>
-                <select
-                  name="designation"
-                  value={formData.designation}
-                  onChange={handleChange}
-                  required
-                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white appearance-none"
-                >
-                  <option value="" disabled>Select your role</option>
-                  <option value="Student">Student</option>
-                  <option value="Faculty">Faculty</option>
-                  <option value="Staff">Staff</option>
-                  <option value="External">External Guest</option>
-                </select>
               </div>
             </div>
 
@@ -154,14 +136,22 @@ const Register = () => {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
+                  autoComplete="new-password"
+                  className="block w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
 
