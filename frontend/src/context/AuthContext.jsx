@@ -30,15 +30,15 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      // Assuming your API endpoint is /login
+
       const response = await api.post('/login', credentials);
       const { access_token: newToken, user: userData } = response.data;
-      
+
       if (!newToken) throw new Error("No access token received");
 
       setToken(newToken);
       setUser(userData);
-      
+
       localStorage.setItem('token', newToken);
       localStorage.setItem('user', JSON.stringify(userData));
 
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       await api.post('/register', userData);
-      
+
       Swal.fire({
         position: 'top-right',
         toast: true,
@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    
+
     Swal.fire({
       position: 'top-right',
       toast: true,
