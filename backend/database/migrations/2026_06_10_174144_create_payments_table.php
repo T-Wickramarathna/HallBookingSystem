@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
             $table->string('stripe_payment_id');
             $table->decimal('amount', 10, 2);
-            $table->string('status');
+            $table->string('status')->default('succeeded');
             $table->timestamps();
         });
     }
