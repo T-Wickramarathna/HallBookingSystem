@@ -5,7 +5,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import HallsListing from './pages/HallsListing';
-import Profile from './pages/Profile';
+import MyBookings from './pages/MyBookings';
+import ManagerDashboard from './pages/ManagerDashboard';
 
 const ProtectedRoute = ({ children }) => {
   const { token, loading } = useContext(AuthContext);
@@ -43,8 +44,8 @@ const AppRoutes = () => {
         <Route index element={<Navigate to="halls" replace />} />
         <Route path="halls" element={<HallsListing />} />
         <Route path="profile" element={<Profile />} />
-        {/* Placeholder for bookings */}
-        <Route path="bookings" element={<div className="p-8"><h2 className="text-2xl font-bold">My Bookings</h2><p className="mt-4 text-gray-500">Feature coming soon.</p></div>} />
+        <Route path="bookings" element={<MyBookings />} />
+        <Route path="stats" element={<ManagerDashboard />} />
       </Route>
       
       <Route path="*" element={<Navigate to="/" replace />} />

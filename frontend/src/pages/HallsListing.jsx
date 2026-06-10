@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import HallCard from '../components/HallCard';
-import { useNavigate } from 'react-router-dom';
-
-// Mock Data for demonstration
-const MOCK_HALLS = [
-  { id: 1, name: 'Grand Horizon', location: 'Main Building, Floor 1', capacity: 500, status: 'Available', image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800' },
-  { id: 2, name: 'Alpha Seminar Room', location: 'Science Block, Floor 2', capacity: 50, status: 'Available', image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=800' },
-  { id: 3, name: 'Executive Boardroom', location: 'Admin Block, Floor 3', capacity: 20, status: 'Unavailable', image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=800' },
-  { id: 4, name: 'Tech Hub Auditorium', location: 'IT Wing, Ground Floor', capacity: 250, status: 'Available', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800' },
-  { id: 5, name: 'Creative Studio', location: 'Arts Block, Floor 1', capacity: 30, status: 'Pending', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=800' },
-  { id: 6, name: 'Community Hall A', location: 'Recreation Center', capacity: 150, status: 'Available', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=800' },
-  { id: 7, name: 'Community Hall B', location: 'Recreation Center', capacity: 100, status: 'Available', image: null },
-  { id: 8, name: 'VIP Lounge', location: 'Main Building, Floor 4', capacity: 40, status: 'Available', image: 'https://images.unsplash.com/photo-1522771731470-41029e54f133?auto=format&fit=crop&q=80&w=800' },
-];
+import BookingModal from '../components/BookingModal';
+import api from '../services/api';
 
 const HallsListing = () => {
   const [halls, setHalls] = useState([]);
@@ -21,17 +10,20 @@ const HallsListing = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedHall, setSelectedHall] = useState(null);
   const itemsPerPage = 6;
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate API fetch
     const fetchHalls = async () => {
-      setLoading(true);
-      setTimeout(() => {
-        setHalls(MOCK_HALLS);
+      try {
+        setLoading(true);
+        const response = await api.get('/halls');
+        setHalls(response.data);
+      } catch (err) {
+        console.error('Failed to fetch halls:', err);
+      } finally {
         setLoading(false);
-      }, 800);
+      }
     };
     fetchHalls();
   }, []);
@@ -53,9 +45,10 @@ const HallsListing = () => {
   );
 
   const handleBookNow = (id) => {
-    // In a real app, navigate to booking details page
-    console.log(`Booking hall ${id}`);
-    // navigate(`/dashboard/halls/${id}`);
+    const hall = halls.find(h => h.id === id);
+    if (hall) {
+      setSelectedHall(hall);
+    }
   };
 
   return (
@@ -154,6 +147,13 @@ const HallsListing = () => {
             </div>
           )}
         </>
+      )}
+
+      {selectedHall && (
+        <BookingModal 
+          hall={selectedHall} 
+          onClose={() => setSelectedHall(null)} 
+        />
       )}
     </div>
   );
