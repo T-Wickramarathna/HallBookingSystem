@@ -67,7 +67,8 @@ const Login = () => {
                   value={credentials.email}
                   onChange={handleChange}
                   required
-                  autoComplete="off"
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute('readonly')}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                   placeholder="you@example.com"
                 />
@@ -86,7 +87,8 @@ const Login = () => {
                   value={credentials.password}
                   onChange={handleChange}
                   required
-                  autoComplete="off"
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute('readonly')}
                   className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                   placeholder="••••••••"
                 />

@@ -19,6 +19,19 @@ class Hall extends Model
         'image_path',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->image_path) {
+            if (filter_var($this->image_path, FILTER_VALIDATE_URL)) {
+                return $this->image_path;
+            }
+            return asset('storage/' . $this->image_path);
+        }
+        return null;
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);
