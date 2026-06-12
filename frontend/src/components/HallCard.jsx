@@ -2,7 +2,7 @@ import React from 'react';
 import { MapPin, Users } from 'lucide-react';
 
 const HallCard = ({ hall, onBookNow }) => {
-  const isAvailable = hall.status.toLowerCase() === 'available';
+  const isAvailable = hall.status && hall.status.toLowerCase() === 'available';
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-blue-50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 transform hover:-translate-y-1">

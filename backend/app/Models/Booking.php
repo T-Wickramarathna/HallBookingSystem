@@ -14,6 +14,10 @@ class Booking extends Model
         'hall_id',
         'status',
         'booking_date',
+        'start_time',
+        'end_time',
+        'seats_booked',
+        'total_price',
     ];
 
     public function user()
@@ -24,5 +28,10 @@ class Booking extends Model
     public function hall()
     {
         return $this->belongsTo(Hall::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
     }
 }

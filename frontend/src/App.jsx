@@ -5,8 +5,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import HallsListing from './pages/HallsListing';
-import MyBookings from './pages/MyBookings';
 import Profile from './pages/Profile';
+import MyBookings from './pages/MyBookings';
+import ManagerDashboard from './pages/ManagerDashboard';
 
 import ManagerLayout from './pages/ManagerLayout';
 import ManagerAnalytics from './pages/ManagerAnalytics';
@@ -100,6 +101,7 @@ const AppRoutes = () => {
         <Route path="halls" element={<HallsListing />} />
         <Route path="profile" element={<Profile />} />
         <Route path="bookings" element={<MyBookings />} />
+        <Route path="stats" element={<ManagerDashboard />} />
       </Route>
 
       <Route
