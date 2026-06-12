@@ -17,7 +17,6 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'mobile' => ['required', 'string', 'regex:/^0[7][0-9]{8}$/'],
-            'designation' => 'required'
         ]);
 
         $user = User::create([
@@ -26,7 +25,6 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'mobile' => $request->mobile,
-            'designation' => $request->designation,
         ]);
 
         return response()->json(['message' => 'User registered successfully'], 201);

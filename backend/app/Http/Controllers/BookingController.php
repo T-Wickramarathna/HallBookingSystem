@@ -78,6 +78,12 @@ class BookingController extends Controller
 
     public function updateStatus(Request $request, Booking $booking)
     {
+        if ($booking->status === 'paid') {
+            return response()->json([
+                'message' => 'Cannot update the status of a paid booking.'
+            ], 400);
+        }
+
         $validatedData = $request->validate([
             'status' => 'required|in:accepted,rejected',
         ]);

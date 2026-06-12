@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Services\Payment\PaymentGatewayInterface;
 use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
 
 class PaymentController extends Controller
 {
+    /**
+     * The payment gateway implementation resolved by the service container.
+     * Equivalent to @Autowired in Spring Boot — Laravel injects this automatically.
+     */
+    public function __construct(private PaymentGatewayInterface $paymentGateway)
+    {
+    }
+
     public function createPaymentIntent(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);
@@ -22,19 +29,10 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Only accepted bookings can be paid for.'], 400);
         }
 
-        // Use the real key from .env
-        Stripe::setApiKey(env('STRIPE_SECRET', env('STRIPE_SECRET_KEY')));
-
         try {
-            $paymentIntent = PaymentIntent::create([
-                'amount' => (int) ($booking->total_price * 100), // Stripe requires amount in cents
-                'currency' => 'usd',
-                'metadata' => ['booking_id' => $booking->id],
-            ]);
+            $result = $this->paymentGateway->createPaymentIntent($booking);
 
-            return response()->json([
-                'client_secret' => $paymentIntent->client_secret
-            ]);
+            return response()->json($result);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -42,31 +40,36 @@ class PaymentController extends Controller
 
     public function confirmPayment(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'booking_id' => 'required|exists:bookings,id',
-            'payment_intent_id' => 'required|string',
         ]);
 
-        $booking = Booking::findOrFail($validatedData['booking_id']);
+        $booking = Booking::findOrFail($request->input('booking_id'));
 
         if ($booking->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized access.'], 403);
         }
 
-        // Add payment record
-        $payment = Payment::create([
-            'booking_id' => $booking->id,
-            'stripe_payment_id' => $validatedData['payment_intent_id'],
-            'amount' => $booking->total_price,
-            'status' => 'succeeded',
-        ]);
+        try {
+            $confirmed = $this->paymentGateway->confirmPayment($request->all());
 
-        // Update booking status
-        $booking->update(['status' => 'paid']);
-        
-        return response()->json([
-            'message' => 'Payment successful and booking confirmed!',
-            'payment' => $payment
-        ]);
+            // Add payment record
+            $payment = Payment::create([
+                'booking_id'     => $booking->id,
+                'transaction_id' => $confirmed['transaction_id'],
+                'amount'         => $booking->total_price,
+                'status'         => $confirmed['status'] ?? 'succeeded',
+            ]);
+
+            // Update booking status
+            $booking->update(['status' => 'paid']);
+
+            return response()->json([
+                'message' => 'Payment successful and booking confirmed!',
+                'payment' => $payment,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 }

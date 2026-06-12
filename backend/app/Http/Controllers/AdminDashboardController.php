@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Hall;
 use App\Models\Booking;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -21,9 +22,8 @@ class AdminDashboardController extends Controller
 
         $total_halls = Hall::count();
 
-        // Calculate total earnings from accepted and paid bookings
-        $total_earnings = Booking::whereIn('status', ['accepted', 'paid'])
-            ->sum('total_price');
+        // Calculate total earnings from actual payments in the database
+        $total_earnings = Payment::sum('amount');
 
         // Bookings overview
         $bookings_overview = Booking::selectRaw('status, count(*) as count')
@@ -49,6 +49,26 @@ class AdminDashboardController extends Controller
             ->groupBy('halls.name')
             ->get();
 
+        // Hall status distribution
+        $hallStatus = Hall::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->get()
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $hallStatusDistribution = [
+            'available' => 0,
+            'unavailable' => 0,
+        ];
+        foreach ($hallStatus as $status => $count) {
+            $normalized = strtolower($status);
+            if (array_key_exists($normalized, $hallStatusDistribution)) {
+                $hallStatusDistribution[$normalized] += $count;
+            } else {
+                $hallStatusDistribution[$normalized] = $count;
+            }
+        }
+
         return response()->json([
             'total_users' => $total_users,
             'active_user_count' => $active_user_count,
@@ -59,6 +79,7 @@ class AdminDashboardController extends Controller
             'bookings_overview' => $bookings_overview,
             'monthly_bookings' => $monthly_bookings,
             'hall_occupancy' => $hallOccupancyRaw,
+            'hall_status_distribution' => $hallStatusDistribution,
         ]);
     }
 }

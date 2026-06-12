@@ -15,7 +15,7 @@ class ManagerMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->role === 'manager') {
+        if ($request->user() && ($request->user()->role === 'manager' || $request->user()->role === 'admin')) {
             return $next($request);
         }
 
