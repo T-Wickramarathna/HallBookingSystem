@@ -196,6 +196,22 @@ const AdminUsers = () => {
             </div>
             
             <form onSubmit={handleSubmitManager} className="p-6 space-y-4">
+              {/* Fake inputs to satisfy autofill engines and prevent credentials autofill */}
+              <input
+                type="email"
+                name="fake_email_prevent_autofill"
+                style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '0px', height: '0px', opacity: 0 }}
+                tabIndex={-1}
+                autoComplete="new-password"
+              />
+              <input
+                type="password"
+                name="fake_password_prevent_autofill"
+                style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '0px', height: '0px', opacity: 0 }}
+                tabIndex={-1}
+                autoComplete="new-password"
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -229,6 +245,7 @@ const AdminUsers = () => {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
+                  autoComplete="new-password"
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none bg-gray-50 focus:bg-white"
                 />
               </div>
@@ -248,8 +265,6 @@ const AdminUsers = () => {
                 />
               </div>
 
-
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Temporary Password</label>
                 <input
@@ -259,6 +274,7 @@ const AdminUsers = () => {
                   minLength="6"
                   value={formData.password}
                   onChange={handleInputChange}
+                  autoComplete="new-password"
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none bg-gray-50 focus:bg-white"
                 />
                 <p className="text-xs text-gray-500 mt-1">Minimum 6 characters.</p>

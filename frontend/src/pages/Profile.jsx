@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import api from '../services/api';
 
 const Profile = () => {
-  const { user, login } = useContext(AuthContext);
+  const { user, updateUser } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,8 +48,10 @@ const Profile = () => {
       });
       
       // Update global context with new user data
-      // AuthContext's login method can be reused to set user if we mock the token logic or we might need to rely on reload.
-      // Assuming context has a way to update user, or we can just reload the page for now
+      if (response.data && response.data.user) {
+        updateUser(response.data.user);
+      }
+
       Swal.fire({
         icon: 'success',
         title: 'Profile Updated',
@@ -59,11 +61,6 @@ const Profile = () => {
       });
       setIsEditing(false);
       setFormData(prev => ({ ...prev, password: '' })); // clear password field
-      
-      // We will reload to sync state since we don't have a direct setUser exported
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
       
     } catch (error) {
       Swal.fire('Error', error.response?.data?.message || 'Failed to update profile', 'error');
@@ -208,10 +205,10 @@ const Profile = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    value={formData.password}
+                    value={isEditing ? formData.password : '••••••••'}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    placeholder={isEditing ? "••••••••" : "••••••••"}
+                    placeholder="••••••••"
                     className="block w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white disabled:opacity-70 disabled:bg-gray-100"
                   />
                   <button

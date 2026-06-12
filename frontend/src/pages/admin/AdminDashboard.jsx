@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Users, UserCheck, Home, DollarSign } from 'lucide-react';
+import { Users, UserCheck, Home, DollarSign, Building } from 'lucide-react';
 import api from '../../services/api';
 
 const STATUS_COLORS = {
@@ -10,10 +10,16 @@ const STATUS_COLORS = {
   canceled: '#6b7280', // gray
 };
 
+const AVAILABILITY_COLORS = {
+  available: '#10b981',
+  unavailable: '#ef4444',
+};
+
 const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
+  const [animate, setAnimate] = useState(false);
   const [stats, setStats] = useState({
     total_users: 0,
     active_user_count: 0,
@@ -22,12 +28,14 @@ const AdminDashboard = () => {
     total_earnings: 0,
     bookings_overview: [],
     monthly_bookings: [],
-    hall_occupancy: []
+    hall_occupancy: [],
+    hall_status_distribution: {}
   });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setAnimate(false);
         const response = await api.get('/admin/dashboard');
         
         // Transform bookings overview from object { status: count } to array [{ name, value }]
@@ -43,8 +51,12 @@ const AdminDashboard = () => {
           bookings_overview: formattedPieData,
           // Reversing because backend logic returns from 11 months ago to now, wait, the backend loop goes from 11 down to 0, which means oldest first. That's already chronological.
           monthly_bookings: response.data.monthly_bookings || [],
-          hall_occupancy: response.data.hall_occupancy || []
+          hall_occupancy: response.data.hall_occupancy || [],
+          hall_status_distribution: response.data.hall_status_distribution || {}
         });
+        setTimeout(() => {
+          setAnimate(true);
+        }, 100);
       } catch (error) {
         console.error("Failed to fetch admin dashboard data", error);
       } finally {
@@ -211,6 +223,43 @@ const AdminDashboard = () => {
             ) : (
               <p className="text-gray-500 italic">No occupancy data available.</p>
             )}
+          </div>
+        </div>
+
+        {/* Hall Availability - Progress Bar list */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+          <h2 className="text-lg font-bold text-gray-900 border-b pb-4 flex items-center gap-2">
+            <Building className="text-indigo-600" size={20} /> Hall Availability
+          </h2>
+          <div className="space-y-6 pt-4">
+            {Object.entries(stats.hall_status_distribution || {}).map(([status, count], i) => {
+              const hallStatusTotal = Object.values(stats.hall_status_distribution || {}).reduce((a, b) => a + b, 0);
+              const percentage = hallStatusTotal > 0 ? ((count / hallStatusTotal) * 100).toFixed(0) : 0;
+              
+              const isAvailable = status.toLowerCase() === 'available';
+              const barColor = isAvailable ? 'bg-emerald-500' : 'bg-rose-500';
+              
+              return (
+                <div key={status} className="space-y-2">
+                  <div className="flex justify-between items-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+                    <span className="flex items-center gap-1.5">
+                      <span className={`w-3 h-3 rounded-full ${barColor}`} />
+                      {status}
+                    </span>
+                    <span className="text-gray-700 font-bold">{count} ({percentage}%)</span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full ${barColor} transition-all duration-1000 ease-out`} 
+                      style={{ 
+                        width: animate ? `${percentage}%` : '0%',
+                        transitionDelay: `${i * 100}ms`
+                      }} 
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

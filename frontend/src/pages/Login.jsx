@@ -55,6 +55,22 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
+            {/* Fake inputs to satisfy autofill engines and prevent credentials autofill */}
+            <input
+              type="email"
+              name="fake_email_prevent_autofill"
+              style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '0px', height: '0px', opacity: 0 }}
+              tabIndex={-1}
+              autoComplete="new-password"
+            />
+            <input
+              type="password"
+              name="fake_password_prevent_autofill"
+              style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '0px', height: '0px', opacity: 0 }}
+              tabIndex={-1}
+              autoComplete="new-password"
+            />
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
               <div className="relative">
@@ -69,6 +85,7 @@ const Login = () => {
                   required
                   readOnly
                   onFocus={(e) => e.target.removeAttribute('readonly')}
+                  autoComplete="new-password"
                   className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                   placeholder="you@example.com"
                 />
@@ -89,6 +106,7 @@ const Login = () => {
                   required
                   readOnly
                   onFocus={(e) => e.target.removeAttribute('readonly')}
+                  autoComplete="new-password"
                   className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none bg-gray-50 focus:bg-white"
                   placeholder="••••••••"
                 />

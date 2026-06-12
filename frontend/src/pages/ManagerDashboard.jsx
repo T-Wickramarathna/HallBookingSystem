@@ -6,14 +6,19 @@ const ManagerDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setLoading(true);
         setError(null);
+        setAnimate(false);
         const response = await api.get('/manager/dashboard');
         setStats(response.data);
+        setTimeout(() => {
+          setAnimate(true);
+        }, 100);
       } catch (err) {
         console.error('Failed to fetch dashboard stats:', err);
         setError('Failed to load dashboard metrics. Ensure you are logged in as a Manager.');
@@ -176,12 +181,16 @@ const ManagerDashboard = () => {
                     </defs>
                     <rect
                       x={x}
-                      y={y}
                       width={barWidth}
-                      height={height}
                       rx="4"
                       fill={`url(#gradient-${i})`}
-                      className="transition-all duration-300 group-hover:fill-blue-500"
+                      className="group-hover:fill-blue-500"
+                      style={{
+                        height: animate ? `${height}px` : '0px',
+                        y: animate ? `${y}px` : '200px',
+                        transition: 'height 1s cubic-bezier(0.34, 1.56, 0.64, 1), y 1s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.3s ease',
+                        transitionDelay: `${i * 50}ms`
+                      }}
                     />
                     {/* Axis Labels */}
                     <text
@@ -210,7 +219,7 @@ const ManagerDashboard = () => {
             </h3>
             
             <div className="space-y-4 pt-2">
-              {Object.entries(stats.booking_status_distribution || {}).map(([status, count]) => {
+              {Object.entries(stats.booking_status_distribution || {}).map(([status, count], i) => {
                 const percentage = bookingStatusTotal > 0 ? ((count / bookingStatusTotal) * 100).toFixed(0) : 0;
                 
                 let barColor = 'bg-blue-600';
@@ -241,7 +250,13 @@ const ManagerDashboard = () => {
                       <span className="text-gray-700 font-bold">{count} ({percentage}%)</span>
                     </div>
                     <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                      <div className={`h-full ${barColor}`} style={{ width: `${percentage}%` }} />
+                      <div 
+                        className={`h-full ${barColor} transition-all duration-1000 ease-out`} 
+                        style={{ 
+                          width: animate ? `${percentage}%` : '0%',
+                          transitionDelay: `${i * 100}ms`
+                        }} 
+                      />
                     </div>
                   </div>
                 );
@@ -256,7 +271,7 @@ const ManagerDashboard = () => {
             </h3>
             
             <div className="space-y-4 pt-2">
-              {Object.entries(stats.hall_status_distribution || {}).map(([status, count]) => {
+              {Object.entries(stats.hall_status_distribution || {}).map(([status, count], i) => {
                 const percentage = hallStatusTotal > 0 ? ((count / hallStatusTotal) * 100).toFixed(0) : 0;
                 
                 const isAvailable = status.toLowerCase() === 'available';
@@ -272,7 +287,13 @@ const ManagerDashboard = () => {
                       <span className="text-gray-700 font-bold">{count} ({percentage}%)</span>
                     </div>
                     <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                      <div className={`h-full ${barColor}`} style={{ width: `${percentage}%` }} />
+                      <div 
+                        className={`h-full ${barColor} transition-all duration-1000 ease-out`} 
+                        style={{ 
+                          width: animate ? `${percentage}%` : '0%',
+                          transitionDelay: `${i * 100}ms`
+                        }} 
+                      />
                     </div>
                   </div>
                 );

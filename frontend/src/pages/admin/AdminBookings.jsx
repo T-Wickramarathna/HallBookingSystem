@@ -49,6 +49,8 @@ const AdminBookings = () => {
 
   const getStatusBadge = (status) => {
     switch (status?.toLowerCase()) {
+      case 'paid':
+        return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Paid</span>;
       case 'accepted':
       case 'approved':
         return <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">Accepted</span>;
@@ -110,7 +112,7 @@ const AdminBookings = () => {
                     <td className="px-6 py-4 text-right space-x-2">
                       <button
                         onClick={() => handleUpdateStatus(booking.id, 'accepted')}
-                        disabled={booking.status === 'accepted' || booking.status === 'approved'}
+                        disabled={booking.status === 'accepted' || booking.status === 'approved' || booking.status === 'paid'}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors"
                       >
                         <CheckCircle2 size={16} />
@@ -118,7 +120,7 @@ const AdminBookings = () => {
                       </button>
                       <button
                         onClick={() => handleUpdateStatus(booking.id, 'rejected')}
-                        disabled={booking.status === 'rejected' || booking.status === 'declined'}
+                        disabled={booking.status === 'rejected' || booking.status === 'declined' || booking.status === 'paid'}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors"
                       >
                         <XCircle size={16} />
