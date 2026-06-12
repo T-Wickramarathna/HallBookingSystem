@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import HallCard from '../components/HallCard';
-import { useNavigate } from 'react-router-dom';
-
-import api from '../services/api';
 import BookingModal from '../components/BookingModal';
+import api from '../services/api';
 
 const HallsListing = () => {
   const [halls, setHalls] = useState([]);
@@ -12,18 +10,17 @@ const HallsListing = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
   const [selectedHall, setSelectedHall] = useState(null);
-  const navigate = useNavigate();
+  const itemsPerPage = 6;
 
   useEffect(() => {
     const fetchHalls = async () => {
-      setLoading(true);
       try {
+        setLoading(true);
         const response = await api.get('/halls');
         setHalls(response.data);
-      } catch (error) {
-        console.error("Failed to fetch halls", error);
+      } catch (err) {
+        console.error('Failed to fetch halls:', err);
       } finally {
         setLoading(false);
       }
@@ -49,7 +46,9 @@ const HallsListing = () => {
 
   const handleBookNow = (id) => {
     const hall = halls.find(h => h.id === id);
-    if (hall) setSelectedHall(hall);
+    if (hall) {
+      setSelectedHall(hall);
+    }
   };
 
   return (

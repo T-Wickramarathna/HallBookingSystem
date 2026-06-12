@@ -20,9 +20,27 @@ const ManagerAnalytics = () => {
       try {
         // Attempt to fetch real data
         const response = await api.get('/manager/dashboard');
-        if (response.data && response.data.stats) {
-          setStats(response.data.stats);
-        }
+        const data = response.data;
+        
+        const totalBookings = Object.values(data.booking_status_distribution || {}).reduce((a, b) => a + b, 0);
+        
+        const bookingsPerMonth = (data.yearly_booking_trend || []).map(item => ({
+          name: item.month,
+          bookings: item.bookings
+        }));
+
+        const hallOccupancy = Object.entries(data.hall_status_distribution || {}).map(([status, count]) => ({
+          name: status.charAt(0).toUpperCase() + status.slice(1),
+          value: count
+        }));
+
+        setStats({
+          totalBookings,
+          activeHalls: data.hall_status_distribution?.available || 0,
+          totalRevenue: `$${Number(data.total_earnings || 0).toLocaleString()}`,
+          bookingsPerMonth,
+          hallOccupancy
+        });
       } catch (error) {
         console.error("Failed to fetch analytics data", error);
       } finally {
